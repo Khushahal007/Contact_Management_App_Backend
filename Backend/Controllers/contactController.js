@@ -2,7 +2,7 @@ const asyncHandler=require("express-async-handler");
 const Contact=require("../Model/contactModel");
 
 const getContact =asyncHandler(async (req, res) => {
-    const contacts=await Contact.find();
+    const contacts=await Contact.find({user_id: req.user.id});
     res.status(200).json(contacts)
 })
 
@@ -18,6 +18,7 @@ const createContact = asyncHandler (async (req, res) => {
         name,
         email,
         phone,
+        user_id: req.user.id
     });
 
     res.status(201).json(contact);
@@ -37,13 +38,29 @@ const getIndividual = asyncHandler (async (req, res) => {
 
 
 const updateContact =asyncHandler(async (req, res) => {
+     
+    const contact=await Contact.findById(req.params.id);
+    if(!contact){
+        res.status(404);
+        throw new Error("Contact Not Found");
+    }
 
+    const updatedContact=await Contact.findByIdAndUpdate(
+        req.params.id, req.body, {new: true}
+    );
     res.status(200).json({ message: `Update Conatct for ${req.params.id}` })
 })
 
 
 
 const deleteContact = asyncHandler (async (req, res) => {
+    const contact=await Contact.findById(req.params.id);
+    if(!contact){
+        res.status(404);
+        throw new Error("Contact Not Found");
+    }
+
+      await Contact.deleteOne();
     res.status(200).json({ message: `Delete Conatct for ${req.params.id}` })
 
 })
