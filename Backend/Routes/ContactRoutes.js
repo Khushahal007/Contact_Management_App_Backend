@@ -4,18 +4,7 @@ const { getContact, createContact, getIndividual, updateContact, deleteContact }
 const validation = require("../Middleware/validateToken");
 
 router.use(validation)
-router.route("/").get(getContact);
-
-
-router.route("/").post(createContact);
-
-
-router.route("/:id").get(getIndividual);
-
-
-router.route("/:id").put(updateContact);
-
-
-router.route("/:id").delete(deleteContact);
+router.route("/").get(getContact).post(createContact);
+router.route("/:id").get(getIndividual).put(updateContact).delete(deleteContact);
 
 module.exports = router;

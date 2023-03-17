@@ -3,45 +3,38 @@ const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken");
 const User = require("../Model/userModel");
 
-
 const registerUser = asyncHandler(async (req, res) => {
 
     const { username, email, password } = req.body;
+  
     if (!username || !email || !password) {
-        res.status(400);
-        throw new Error("All feilds are mandatory");
+      res.status(400).json({ message: "All fields are mandatory" });
+      return;
     }
-
+  
     const userAvailable = await User.findOne({ email });
+  
     if (userAvailable) {
-        res.status(400);
-        throw new Error("User already Registered!");
+      res.status(400).json({ message: "User already registered" });
+      return;
     }
-
-    // Hash Passwords
-
+  
     const hashPassword = await bcrypt.hash(password, 11);
-    console.log("Hash Password:", hashPassword);
-
-    // Create User
+  
     const user = await User.create({
-        username,
-        email,
-        password: hashPassword,
-    })
-
-    console.log(`User Created ${user}`);
+      username,
+      email,
+      password: hashPassword,
+    });
+  
     if (user) {
-        res.status(201).json({ _id: user.id, email: user.email });
-
+      res.status(201).json({ _id: user.id, email: user.email });
     } else {
-        res.status(400);
-        throw new Error("User not Valid");
+      res.status(400).json({ message: "User not valid" });
     }
-
-    res.json({ message: "User register suceessfully" })
-})
-
+  
+  });
+  
 
 const loginUser = asyncHandler(async (req, res) => {
 
